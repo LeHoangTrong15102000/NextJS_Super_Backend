@@ -158,14 +158,15 @@ export const updateMeController = async (accountId: number, body: UpdateMeBodyTy
 }
 
 export const changePasswordController = async (accountId: number, body: ChangePasswordBodyType) => {
-  const hashedOldPassword = await hashPassword(body.oldPassword)
+  // const hashedOldPassword = await hashPassword(body.oldPassword)
   const account = await prisma.account.findUniqueOrThrow({
     where: {
       id: accountId
     }
   })
-  const isSame = await comparePassword(account.password, hashedOldPassword)
-  if (isSame) {
+  // Việc so sánh giữa password confirm_password sẽ thực hiện ở phía FE
+  const isSame = await comparePassword(body.oldPassword, account.password)
+  if (!isSame) {
     throw new EntityError([{ field: 'oldPassword', message: 'Mật khẩu cũ không đúng' }])
   }
   const hashedPassword = await hashPassword(body.password)
