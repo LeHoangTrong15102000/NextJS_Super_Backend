@@ -83,11 +83,13 @@ export const refreshTokenController = async (refreshToken: string) => {
       expiresIn: decodedRefreshToken.exp
     }
   )
+  // Xóa refreshToken đi trước
   await prisma.refreshToken.delete({
     where: {
       token: refreshToken
     }
   })
+  // Sau đó thêm refreshToken mới vào database
   await prisma.refreshToken.create({
     data: {
       accountId: account.id,
