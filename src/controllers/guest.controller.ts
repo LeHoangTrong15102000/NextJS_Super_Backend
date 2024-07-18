@@ -4,7 +4,6 @@ import prisma from '@/database'
 import { GuestCreateOrdersBodyType, GuestLoginBodyType } from '@/schemaValidations/guest.schema'
 import { StatusError } from '@/utils/errors'
 import { signAccessToken, signRefreshToken, verifyRefreshToken } from '@/utils/jwt'
-import { addMilliseconds } from 'date-fns'
 import ms from 'ms'
 
 export const guestLoginController = async (body: GuestLoginBodyType) => {
@@ -27,6 +26,7 @@ export const guestLoginController = async (body: GuestLoginBodyType) => {
     }
   })
 
+  // Nên là cần truyền vào exp để mà lấy cái tg của token của guest
   const refreshToken = signRefreshToken({
     userId: guest.id,
     role: Role.Guest,
