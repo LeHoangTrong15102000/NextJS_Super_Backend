@@ -4,7 +4,6 @@ import { RoleType, TokenPayload } from '@/types/jwt.types'
 import { comparePassword } from '@/utils/crypto'
 import { AuthError, EntityError } from '@/utils/errors'
 import { signAccessToken, signRefreshToken, verifyRefreshToken } from '@/utils/jwt'
-import ms from 'ms'
 
 export const logoutController = async (refreshToken: string) => {
   await prisma.refreshToken.delete({
@@ -36,7 +35,6 @@ export const loginController = async (body: LoginBodyType) => {
     userId: account.id,
     role: account.role as RoleType
   })
-
   const decodedRefreshToken = verifyRefreshToken(refreshToken)
   const refreshTokenExpiresAt = new Date(decodedRefreshToken.exp * 1000)
 
@@ -79,13 +77,11 @@ export const refreshTokenController = async (refreshToken: string) => {
     role: account.role as RoleType,
     exp: decodedRefreshToken.exp
   })
-  // Xóa refreshToken đi trước
   await prisma.refreshToken.delete({
     where: {
       token: refreshToken
     }
   })
-  // Sau đó thêm refreshToken mới vào database
   await prisma.refreshToken.create({
     data: {
       accountId: account.id,

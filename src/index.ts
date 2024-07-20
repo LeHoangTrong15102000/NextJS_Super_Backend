@@ -7,6 +7,7 @@ import authRoutes from '@/routes/auth.route'
 import fastifyAuth from '@fastify/auth'
 import fastifyCookie from '@fastify/cookie'
 import fastifyHelmet from '@fastify/helmet'
+import fastifySocketIO from 'fastify-socket.io'
 import Fastify from 'fastify'
 import cors from '@fastify/cors'
 import path from 'path'
@@ -18,6 +19,9 @@ import testRoutes from '@/routes/test.route'
 import { initOwnerAccount } from '@/controllers/account.controller'
 import tablesRoutes from '@/routes/table.route'
 import guestRoutes from '@/routes/guest.route'
+import orderRoutes from '@/routes/order.route'
+import { socketPlugin } from '@/plugins/socket.plugins'
+import indicatorRoutes from '@/routes/indicator.route'
 
 const fastify = Fastify({
   logger: false
@@ -44,6 +48,12 @@ const start = async () => {
     fastify.register(fastifyCookie)
     fastify.register(validatorCompilerPlugin)
     fastify.register(errorHandlerPlugin)
+    fastify.register(fastifySocketIO, {
+      cors: {
+        origin: 'http://localhost:3000'
+      }
+    })
+    fastify.register(socketPlugin)
     fastify.register(authRoutes, {
       prefix: '/auth'
     })
@@ -62,11 +72,17 @@ const start = async () => {
     fastify.register(tablesRoutes, {
       prefix: '/tables'
     })
+    fastify.register(orderRoutes, {
+      prefix: '/orders'
+    })
     fastify.register(testRoutes, {
       prefix: '/test'
     })
     fastify.register(guestRoutes, {
       prefix: '/guest'
+    })
+    fastify.register(indicatorRoutes, {
+      prefix: '/indicators'
     })
     await initOwnerAccount()
     await fastify.listen({
